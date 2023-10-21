@@ -1,0 +1,173 @@
+
+
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-button (click)="navFun('BILL')" class="custom-button">
+        Bill
+      </ion-button>
+      <ion-button (click)="navFun('RATE')" class="custom-button">
+        Rate Fixer
+      </ion-button>
+      <ion-button (click)="navFun('SETTLEMENT')" class="custom-button">
+        Settlement
+      </ion-button>
+      <ion-button (click)="navFun('CUSTOMER')" class="custom-button">
+        Customer
+      </ion-button>
+      <ion-button (click)="navFun('U&U')" class="custom-button">
+        Ustash & Update
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-menu-button></ion-menu-button>
+      <ion-button (click)="navFun('SETTING')" class="custom-button">
+        <ion-icon name="settings"></ion-icon>
+      </ion-button>
+      <ion-button (click)="navFun('LOGOUT')" class="custom-button">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="5"><ion-label class="custom-table" position="floating">Number</ion-label>
+        <!-- <ion-label class="custom-table" position="floating">Number</ion-label><ion-input id="phoneid" placeholder="" [(ngModel)]="phoneNumber" (ionChange)="onInputChange($event)" (keyup)="onInputChange($event)" > -->
+
+      <!-- </ion-input> -->
+        <!-- <ion-list *ngIf="filteredOptions.length > 0"> -->
+          <!-- <ion-item *ngFor="let option of filteredOptions" (click)="onOptionSelected(option)">
+            {{ option }}
+          </ion-item> -->
+
+        <!-- </ion-list>
+        <ion-list *ngIf="filteredOptions.length > 0">
+          <ion-item *ngFor="let option of filteredOptions; let i = index" [class.selected]="selectedIndex === i" (click)="onOptionSelected(option)">
+            {{ option }}
+          </ion-item>
+        </ion-list> -->
+
+        
+        <!-- <ion-input id="phoneid" disable="" placeholder="" [(ngModel)]="phoneNumber" (ionInput)="onInputChanged()" (keydown.ArrowDown)="navigateOptions('down')" (keydown.ArrowUp)="navigateOptions('up')" (keydown.Enter)="selectOption()"></ion-input> -->
+        <ion-input #input1 (keyup.enter)="focusNext(input2)" id="phoneid" [disabled]="inputDisable" placeholder="" [(ngModel)]="phoneNumber" (ionInput)="onInputChanged()" (keydown.ArrowDown)="navigateOptions('down')" (keydown.ArrowUp)="navigateOptions('up')" (keydown.Enter)="selectOption()"></ion-input>
+
+        <ion-list *ngIf="filteredOptions.length > 0">
+          <ion-item *ngFor="let option of filteredOptions; let i = index" [class.selected]="selectedIndex === i" (click)="onOptionSelectedclick(option)">
+            {{ option }}
+          </ion-item>
+        </ion-list>
+        
+      </ion-col>
+      
+      <ion-col size="5"><ion-label class="custom-table" position="floating">Name</ion-label>    <ion-input #input2 id="phoneid" [disabled]="inputDisable" placeholder="" [(ngModel)]="name"></ion-input></ion-col>
+        <ion-col size="2">    <ion-label class="custom-table">Bill Number: {{ billNumber }}</ion-label></ion-col>
+    </ion-row>
+    <ion-row *ngIf="isBill">
+      <ion-col size="8">
+        <table mat-table [dataSource]="dataSource" class="custom-table">
+          <ng-container matColumnDef="itemCode">
+            <th mat-header-cell *matHeaderCellDef>Item Code</th>
+            <td mat-cell *matCellDef="let item">{{ item.itemCode }}</td>
+          </ng-container>
+          <ng-container matColumnDef="itemName">
+            <th mat-header-cell *matHeaderCellDef>Item Name</th>
+            <td mat-cell *matCellDef="let item">{{ item.itemName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Price</th>
+            <td mat-cell *matCellDef="let item">{{ item.price }}</td>
+          </ng-container>
+          <ng-container matColumnDef="quantity" class="quantity-column">
+            <th mat-header-cell *matHeaderCellDef>Quantity
+              <ion-button mat-icon-button *ngIf="!isEditButtonClicked" (click)="EditButtonClicked()">
+                <ion-icon name="add"></ion-icon>
+              </ion-button>
+              <ion-button mat-icon-button *ngIf="isEditButtonClicked" (click)="EditButtonClicked()" color="danger">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </th>
+            <td mat-cell *matCellDef="let item" class="quantity-column"><input [disabled]="!isEditButtonClicked" type="text" [(ngModel)]="item.quantity" (change)="changeQuantity(item)"></td>
+          </ng-container>
+          <ng-container matColumnDef="totalPrice">
+            <th mat-header-cell *matHeaderCellDef>Total Price</th>
+            <td mat-cell *matCellDef="let item" >{{ item.totalPrice }}  </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>actions</th>
+            <td mat-cell *matCellDef="let item">
+              <ion-button mat-icon-button (click)="removeItem(item)" color="danger">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </ion-col>
+      <ion-col size="4"  *ngIf="!isUpdateButtonClicked" (keydown)="onKeyDown($event,0,'')">
+        <ion-input id="phoneid" placeholder="Item Code" [disabled] = 'true' [(ngModel)]="itemcode" ></ion-input>
+        <!-- <ion-input id="phoneid" placeholder="Item Quandity" [(ngModel)]="itemquandity"></ion-input> -->
+        <ion-button expand="full" (click)="addItem()">Add</ion-button>
+        <ion-button expand="full"  [disabled] = '(tableData.length == 0 && !stashed) || this.generateUpdateBill' (click)="stashBill(stashed ? 'unstash':'stash')">{{stashed ? 'un':''}}stash</ion-button>
+        <ion-button expand="full"  [disabled] = "this.generateUpdateBill" (click)="updateItems()">Update</ion-button>
+        <ion-button expand="full" (click)="clearItems()" color="danger" >Clear</ion-button>
+        <ion-radio-group [(ngModel)]="paymentMethod">
+          <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-label>Cash</ion-label>
+                <ion-radio value="cash"></ion-radio>
+              </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-item>
+                <ion-label>Card</ion-label>
+                <ion-radio value="card"></ion-radio>
+              </ion-item>
+            </ion-col>
+            <ion-col>
+              <ion-item>
+                <ion-label>UPI</ion-label>
+                <ion-radio value="upi"></ion-radio>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-radio-group>
+        <ion-button expand="full" [disabled]="!paymentMethod" (click)="generateBill()">Generate Bill</ion-button>
+      </ion-col>
+
+      <!-- <ion-col size="4"  *ngIf="isAddButtonClicked">
+        <ion-input id="phoneid" placeholder="Item Code" [(ngModel)]="itemcode" ></ion-input>
+        <ion-input id="phoneid" placeholder="Item Quandity" [(ngModel)]="itemquandity"></ion-input>
+        <ion-button expand="full" (click)="addItem()">Add</ion-button>
+        <ion-button expand="full" (click)="back()">back</ion-button>
+        
+      </ion-col> -->
+
+      <ion-col size="4"  *ngIf="isUpdateButtonClicked">
+        <ion-input placeholder="Bill Number" [(ngModel)]="updateBillNumber"></ion-input>
+
+        <ion-button expand="full" (click)="dataForUpdateBill()">Get Bill</ion-button>
+        <ion-button expand="full" (click)="back()">back</ion-button>
+        
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-label>Total Items: {{ totalItems }}</ion-label>
+    <ion-label>Total Quantity: {{ totalQuantity }}</ion-label>
+    <ion-label>Total Amount: {{ totalAmount }}</ion-label>
+  </ion-toolbar>
+</ion-footer>
+

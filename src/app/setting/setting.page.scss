@@ -1,0 +1,34 @@
+ion-content {
+  --ion-background-color: #ffffff;
+}
+
+ion-toolbar {
+  --background: #3880ff;
+  --color: #ffffff;
+}
+
+.custom-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.custom-button {
+  margin: 0 4px;
+  min-width: 40px;
+}
+
+.custom-button ion-icon {
+  font-size: 24px;
+}
+
+@media (max-width: 576px) {
+  .custom-button {
+    min-width: 30px;
+  }
+
+  .custom-button ion-icon {
+    font-size: 20px;
+  }
+}
